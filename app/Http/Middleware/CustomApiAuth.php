@@ -27,7 +27,7 @@ class CustomApiAuth
     {
 
         if (!in_array($request->header('ApiToken'),$this->keys)) {
-            return response()->json(['message'=>'credential error'],401);
+            return response()->json(['error'=>'Unauthorized'],401);
         }
 
         return $next($request);
