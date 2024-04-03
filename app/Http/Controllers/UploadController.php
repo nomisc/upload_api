@@ -37,6 +37,8 @@ class UploadController extends Controller
         $newFile->file_size = $file->getSize();
         $newFile->mime_type = $file->getClientMimeType();
         $newFile->extension =  $file->getClientOriginalExtension();
+        $newFile->description = $request->description ?? null;
+        $newFile->title = $request->title ?? null;
         if ($newFile->save()) {
             return new UploadResource($newFile);
         }
