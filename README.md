@@ -1,66 +1,145 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Get the Code
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+- Pull the code from the repository:
 
-## About Laravel
+```bash
+git clone git@github.com:nomisc/upload_api.git
+cd upload_api 
+```
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+# Versions
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+There are 3 versions in the Git repository, each in a separate branch. The basic functionality is the same, but the difference lies in how users authenticate and how API keys are managed.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+To access all branches:
 
-## Learning Laravel
+```bash
+git fetch --all
+git checkout web_versin 
+git checkout cli_version 
+git checkout basic_version 
+```
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+# Installation
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+Basic commands to set up the project:
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+```bash
+composer install 
+cp .env.example .env 
+php artisan migrate  //confirm to create database 
+php artisan key:generate 
+php artisan serve --port=xxxx
+```
 
-## Laravel Sponsors
+## basic_version
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+In the basic_version, a custom string is entered in the .env file under the key "API_KEYS". You can add multiple keys, separated by '|'.
 
-### Premium Partners
+example:
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+```bash
+API_KEYS=3N5FhW5YuOvzfg==|snaZ4c+amIvK9QLP+sLO
+```
 
-## Contributing
+Include one of these keys in the curl header with the key ApiToken.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Curl call example:
 
-## Code of Conduct
+```bash 
+curl -H 'ApiToken: 3N5FhW5YuOvzfg==' -F "file=@/home/simon/demo.png" -F "title=<title>" -F 'description=<description>" -X POST http://localhost:9500/api/upload
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## cli_version
 
-## Security Vulnerabilities
+In the cli_version, users and keys can be managed in the terminal via the php artisan command. There are two commands available:
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Add user: ```app:add-user```
 
-## License
+Add user with parameters: ```app:add-user <username> <email> <password>```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+If partial information is provided with parameters, additional information can be added during the process in the terminal.
+
+List users and generate a new API key:  ``` app:list-users```
+
+Curl call example:
+
+```bash 
+curl -H 'Authorization: Bearer [api key generated in app or cli]' -F "file=@/home/simon/demo.png" -F "title=<title>" -F 'description=<description>" -X POST http://localhost:9500/api/upload
+```
+
+## web_version
+
+In the web_version, there's a web interface where users can register their accounts. When the user is logged in, the API key can be set or reset in the profile section.
+
+Curl call example:
+
+```bash 
+curl -H 'Authorization: Bearer [api key generated in app or cli]' -F "file=@/home/simon/demo.png" -F "title=<title>" -F 'description=<description>" -X POST http://localhost:9500/api/upload
+```
+
+# Response
+
+## Invalid file
+
+```json
+{
+	"message": "There was error in process of uploading file. Check the messages for details!",
+	"errors": {
+		"file": [
+			"The file field must be a file of type: jpeg, png, mp4, svg."
+		]
+	}
+}
+```
+
+## Missing field file:
+
+```json
+{
+	"message": "There was error in process of uploading file. Check the messages for details!",
+	"errors": {
+		"file": [
+			"The file field is required."
+		]
+	}
+}
+```
+
+## OK response:
+
+```json
+{
+	"data": {
+		"original_name": "image.png",
+		"file_name": "20240403-165958_image.png",
+		"file_path": "/project/upload_api/storage/app/upload/20240403-165958_image.png",
+		"file_size": 157182,
+		"mime_type": "image/png",
+		"extension": "png"
+	}
+}
+```
+
+## Unauthorized access
+
+```json
+{
+	"error": "Unauthorized"
+}
+```
+
+
+## Swiching version
+
+When you switch between web_version and the other two, you need to run:
+```bash 
+composer install 
+ ```
+
+For the web_version, it is required to install Vite:
+
+```bash 
+npm install vite --save-dev
+npm dev build
+``` 
